@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>For You</title>
     <link rel="stylesheet" href="styles.css">
     <style>
@@ -21,6 +21,7 @@
             color: var(--text-color);
             text-align: center;
             overflow-x: hidden;
+            touch-action: pan-y; /* Disable pinch-to-zoom */
         }
 
         body.overlay-open {
@@ -181,13 +182,15 @@
             width: 90%;
             max-width: 800px; /* Reduced max-width */
             margin: 15px auto; /* Reduced margin */
+            overflow: hidden;
         }
 
         .carousel {
             display: flex;
             gap: 8px; /* Reduced gap */
-            overflow: hidden;
             scroll-behavior: smooth;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
         }
 
         .carousel img {
@@ -197,6 +200,7 @@
             border-radius: 8px; /* Reduced border radius */
             cursor: pointer;
             transition: transform 0.3s ease-in-out;
+            scroll-snap-align: start;
         }
 
         .carousel img:hover {
@@ -448,6 +452,31 @@
                 nextImage(); // Swipe left
             } else if (touchEndX > touchStartX + swipeThreshold) {
                 prevImage(); // Swipe right
+            }
+        }
+
+        // Swipe functionality for carousel
+        let carouselTouchStartX = 0;
+        let carouselTouchEndX = 0;
+
+        document.getElementById('carousel').addEventListener('touchstart', (e) => {
+            carouselTouchStartX = e.touches[0].clientX;
+        });
+
+        document.getElementById('carousel').addEventListener('touchmove', (e) => {
+            carouselTouchEndX = e.touches[0].clientX;
+        });
+
+        document.getElementById('carousel').addEventListener('touchend', () => {
+            handleCarouselSwipe();
+        });
+
+        function handleCarouselSwipe() {
+            const swipeThreshold = 50; // Minimum swipe distance to trigger
+            if (carouselTouchEndX < carouselTouchStartX - swipeThreshold) {
+                scrollCarousel(1); // Swipe left
+            } else if (carouselTouchEndX > carouselTouchStartX + swipeThreshold) {
+                scrollCarousel(-1); // Swipe right
             }
         }
 
