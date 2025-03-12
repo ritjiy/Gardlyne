@@ -206,6 +206,12 @@
             scroll-behavior: smooth;
             overflow-x: auto;
             scroll-snap-type: x mandatory;
+            scrollbar-width: none; /* Hide scrollbar for Firefox */
+            -ms-overflow-style: none; /* Hide scrollbar for IE/Edge */
+        }
+
+        .carousel::-webkit-scrollbar {
+            display: none; /* Hide scrollbar for Chrome/Safari */
         }
 
         .carousel img {
@@ -378,6 +384,31 @@
             const carousel = document.getElementById('carousel');
             const scrollAmount = 120; /* Adjusted scroll amount */
             carousel.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+        }
+
+        // Swipe functionality for main slideshow
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.getElementById('overlay-image').addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+        });
+
+        document.getElementById('overlay-image').addEventListener('touchmove', (e) => {
+            touchEndX = e.touches[0].clientX;
+        });
+
+        document.getElementById('overlay-image').addEventListener('touchend', () => {
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50; // Minimum swipe distance to trigger
+            if (touchEndX < touchStartX - swipeThreshold) {
+                nextImage(); // Swipe left
+            } else if (touchEndX > touchStartX + swipeThreshold) {
+                prevImage(); // Swipe right
+            }
         }
 
         // Swipe functionality for carousel
